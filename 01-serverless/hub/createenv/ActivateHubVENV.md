@@ -3,7 +3,7 @@
 ## Install packages (general)
 ```powershell
 $VERSION="3.12";
-$ENV_NAME="azfdyft";
+$ENV_NAME="azhubft";
 $ENV_SURFIX="pip";
 
 $ENV_FULL_NAME = "$ENV_NAME$VERSION$ENV_SURFIX";
@@ -11,10 +11,10 @@ $ENV_FULL_NAME = "$ENV_NAME$VERSION$ENV_SURFIX";
 $ENV_DIR="$env:USERPROFILE\Documents\VENV\";
 
 # absolute path of requirements.txt to install for the python venv
-$PROJ_DIR="$env:USERPROFILE\Documents\VCS\ai\model-fine-tuning";
+$PROJ_DIR="$env:USERPROFILE\Documents\VCS\democollections\model-fine-tuning";
 # $SubProj="\"
-$SubProj="01-foundamentals\"
-$typeProj="_fdy"
+$SubProj="01-serverless\hub\"
+$typeProj=""
 $PackageFile="$PROJ_DIR\${SubProj}requirements${typeProj}.txt";
 
 & "$ENV_DIR$ENV_FULL_NAME\Scripts\Activate.ps1";
