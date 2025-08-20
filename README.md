@@ -17,6 +17,8 @@ Reference
 * https://github.com/MicrosoftDocs/azure-ai-docs/blob/main/articles/ai-foundry/how-to/fine-tune-serverless.md
 * azureml-mlflow https://learn.microsoft.com/en-us/azure/machine-learning/concept-mlflow?view=azureml-api-2
 * https://github.com/Azure/azureml-examples/blob/main/sdk/python/jobs/finetuning/standalone/model-as-a-service/chat-completion/chat_completion_with_model_as_service.ipynb
+* finetuning and distrillation https://github.com/microsoft/Build25-LAB329
+
 
 
 
