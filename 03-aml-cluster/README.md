@@ -22,10 +22,23 @@ Pre-build Docker Images for Inference https://learn.microsoft.com/en-us/azure/ma
 Sources:
 * ACPT Versions https://learn.microsoft.com/en-us/azure/machine-learning/resource-azure-container-for-pytorch?view=azureml-api-2#supported-configurations-for-azure-container-for-pytorch-acpt
 * Curated Env pytorc (registries, azureml, aifx) https://ml.azure.com/
+* Listing MAR/MCR v2 image tags https://mcr.microsoft.com/v2/azureml/o16n-base/python-assets/tags/list
 
 mcr.microsoft.com/azureml/curated/acpt-pytorch-2.2-cuda12.1:40
-mcr.microsoft.com/aifx/acpt/stable-ubuntu2004-cu121-py310-torch22x:biweekly.202406.1
+https://mcr.microsoft.com/v2/azureml/curated/acpt-pytorch-2.2-cuda12.1/tags/list
+code of image
+https://github.com/Azure/azureml-assets/tree/main/assets/training/general/environments/acpt-pytorch-2.2-cuda12.1
+
+mcr.microsoft.com/aifx/acpt/stable-ubuntu2004-cu121-py310-torch22x:biweekly.202504.1
+https://mcr.microsoft.com/v2/aifx/acpt/stable-ubuntu2004-cu121-py310-torch22x/tags/list
+
+https://mcr.microsoft.com/v2/aifx/acpt/
+
 https://ml.azure.com/registries/azureml/environments/acpt-pytorch-2.2-cuda12.1/version/40?tid=16b3c013-d300-468d-ac64-7eda0820b6d3
+
+MCR list:
+https://mcr.microsoft.com/v2/azureml/o16n-base/python-assets/tags/list
+https://mcr.microsoft.com/aifx/acpt/list
 
 mcr.microsoft.com/aifx/acpt/stable-ubuntu2204-cu118-py310-torch271:biweekly.202508.1
 
@@ -76,3 +89,6 @@ Reference:
 Then you got a container building job running on Serverless VM (STANDARD_E4DS_V4)
 
 https://ml.azure.com/experiments/id/prepare_image/runs/imgbldrun_2ff31ee?wsid=/subscriptions/92645b1b-8a8a-4693-b8e2-c214a523fe40/resourcegroups/general-aml/workspaces/general-aml&tid=16b3c013-d300-468d-ac64-7eda0820b6d3
+
+## References
+* sample origin Reference: https://github.com/yuvmaz/aml_labs
