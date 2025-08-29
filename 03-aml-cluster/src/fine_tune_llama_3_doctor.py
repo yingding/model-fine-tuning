@@ -140,8 +140,9 @@ def get_answer(model, tokenizer):
     text = tokenizer.decode(outputs[0], skip_special_tokens=False)
     return text
 
-
-device_id = torch.cuda.current_device()
+# testing wheath has cuda 
+if torch.cuda.is_available():
+    device_id = torch.cuda.current_device()
 
 if __name__ == '__main__':
 

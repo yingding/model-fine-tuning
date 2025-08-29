@@ -22,3 +22,6 @@ peft==0.17.1
 torch==2.8.0
 torchaudio==2.8.0
 torchvision==0.23.0
+bitsandbytes==0.47.0
+hf-xet==1.1.9
+huggingface-hub==0.34.4
