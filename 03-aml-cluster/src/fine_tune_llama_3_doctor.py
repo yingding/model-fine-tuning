@@ -47,7 +47,7 @@ def prepare_data(finetune_dataset, num_data_rows, hf_cache, base_model, eval_siz
 
     return dataset.train_test_split(test_size=eval_size)
 
-def do_training(base_model, eval_size, finetune_dataset, finetuned_model, cache_dir, num_epochs, batch_size):
+def do_training(base_model, eval_size, dataset, finetuned_model, cache_dir, num_epochs, batch_size):
 
     qlora_config = BitsAndBytesConfig(
         load_in_4bit=True,
@@ -56,11 +56,20 @@ def do_training(base_model, eval_size, finetune_dataset, finetuned_model, cache_
         bnb_4bit_use_double_quant=True
     )
 
-    device_index = Accelerator().process_index
+    # Check if CUDA is available and configure device mapping accordingly
+    if torch.cuda.is_available():
+        device_index = Accelerator().process_index
+        device_map = {"": device_index}
+    else:
+        # Fallback to CPU or auto device mapping
+        device_map = "auto"
+        # For CPU, we might want to disable quantization
+        qlora_config = None
+
     model = AutoModelForCausalLM.from_pretrained(
         base_model,
         quantization_config=qlora_config,
-        device_map = {"": device_index},
+        device_map=device_map,
         attn_implementation="eager",
         cache_dir=cache_dir
     )
@@ -91,7 +100,7 @@ def do_training(base_model, eval_size, finetune_dataset, finetuned_model, cache_
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
         gradient_accumulation_steps=2,
-        optim="paged_adamw_32bit",
+        optim="paged_adamw_32bit" if torch.cuda.is_available() else "adamw_torch",
         num_train_epochs=num_epochs,
         eval_strategy="steps",
         eval_steps=0.2,
@@ -99,10 +108,10 @@ def do_training(base_model, eval_size, finetune_dataset, finetuned_model, cache_
         warmup_steps=10,
         logging_strategy="steps",
         learning_rate=2e-4,
-        fp16=True,
+        fp16=torch.cuda.is_available(),
         bf16=False,
         group_by_length=True,
-        report_to='azure_ml'
+        report_to='azure_ml' if torch.cuda.is_available() else None
     )
 
 
@@ -112,7 +121,7 @@ def do_training(base_model, eval_size, finetune_dataset, finetuned_model, cache_
         eval_dataset=dataset["test"],
         processing_class=tokenizer,
         args=training_arguments,
-        packing=False,
+        # packing=False,
     )
 
     OUTPUTS = "./outputs/"
