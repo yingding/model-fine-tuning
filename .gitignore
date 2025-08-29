@@ -208,3 +208,7 @@ __marimo__/
 
 **/.vscode/
 
+**/mlruns/
+**/llama3-8b-chat-doctor/
+
+
