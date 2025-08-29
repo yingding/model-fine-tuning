@@ -170,13 +170,3 @@ if __name__ == '__main__':
 
     if Accelerator().process_index == 0:
         print(get_answer(model, tokenizer))
-
-
-
-
-
-
-
-
-
-
