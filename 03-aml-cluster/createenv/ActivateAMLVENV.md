@@ -11,8 +11,8 @@ $ENV_DIR="$env:USERPROFILE\Documents\VENV\";
 # absolute path of requirements.txt to install for the python venv
 $PROJ_DIR="$env:USERPROFILE\Documents\VCS\democollections\model-fine-tuning";
 # $SubProj="\"
-$SubProj="03-aml-cluster\"
-$typeProj="_nb"
+$SubProj="03-aml-cluster\";
+$typeProj="_nb";
 $PackageFile="$PROJ_DIR\${SubProj}requirements${typeProj}.txt";
 
 & "$ENV_DIR$ENV_FULL_NAME\Scripts\Activate.ps1";

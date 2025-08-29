@@ -65,6 +65,13 @@ def do_training(base_model, eval_size, finetune_dataset, finetuned_model, cache_
         cache_dir=cache_dir
     )
     tokenizer = AutoTokenizer.from_pretrained(base_model)
+    
+    # Set the maximum sequence length for the tokenizer
+    tokenizer.model_max_length = 512
+    
+    # Ensure padding token is set
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
 
     model, tokenizer = setup_chat_format(model, tokenizer)
 
@@ -77,8 +84,6 @@ def do_training(base_model, eval_size, finetune_dataset, finetuned_model, cache_
         task_type="CAUSAL_LM", 
     )
     model = get_peft_model(model, peft_config)
-
-
 
 
     training_arguments = TrainingArguments(
@@ -105,12 +110,9 @@ def do_training(base_model, eval_size, finetune_dataset, finetuned_model, cache_
         model=model,
         train_dataset=dataset["train"],
         eval_dataset=dataset["test"],
-        peft_config=peft_config,
-        max_seq_length=512,
-        dataset_text_field="text",
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         args=training_arguments,
-        packing= False,
+        packing=False,
     )
 
     OUTPUTS = "./outputs/"
