@@ -18,12 +18,16 @@ from peft import (
 )
 
 import os, torch, mlflow
+import gc
 from datasets import load_dataset, Dataset, ReadInstruction
 from trl import SFTTrainer, setup_chat_format
 import argparse
 import os
 import mlflow
 import torch
+
+# Set environment variables for memory optimization
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 def prepare_data(finetune_dataset, num_data_rows, hf_cache, base_model, eval_size):
     tokenizer = AutoTokenizer.from_pretrained(base_model, cache_dir=hf_cache)
@@ -86,20 +90,29 @@ def do_training(base_model, eval_size, dataset, finetuned_model, cache_dir, num_
 
 
     peft_config = LoraConfig(
-        r=4,
-        lora_alpha=16,
+        r=8,  # Increased from 4 for better learning capacity
+        lora_alpha=32,  # Increased proportionally
         lora_dropout=0.05,
         bias="none",
         task_type="CAUSAL_LM", 
     )
     model = get_peft_model(model, peft_config)
+    
+    # Enable gradient checkpointing to save memory
+    model.gradient_checkpointing_enable()
+    
+    # Clear cache and optimize memory
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.synchronize()
+        gc.collect()
 
 
     training_arguments = TrainingArguments(
         output_dir=finetuned_model,
-        per_device_train_batch_size=batch_size,
-        per_device_eval_batch_size=batch_size,
-        gradient_accumulation_steps=2,
+        per_device_train_batch_size=max(1, batch_size // 4),  # Reduce batch size significantly
+        per_device_eval_batch_size=max(1, batch_size // 4),   # Reduce eval batch size too
+        gradient_accumulation_steps=8,  # Increase gradient accumulation to maintain effective batch size
         optim="paged_adamw_32bit" if torch.cuda.is_available() else "adamw_torch",
         num_train_epochs=num_epochs,
         eval_strategy="steps",
@@ -111,7 +124,10 @@ def do_training(base_model, eval_size, dataset, finetuned_model, cache_dir, num_
         fp16=torch.cuda.is_available(),
         bf16=False,
         group_by_length=True,
-        report_to='azure_ml' if torch.cuda.is_available() else None
+        report_to='azure_ml' if torch.cuda.is_available() else None,
+        dataloader_pin_memory=False,  # Reduce memory usage
+        save_steps=500,  # Save less frequently to reduce memory peaks
+        eval_accumulation_steps=1,  # Reduce eval memory usage
     )
 
 
