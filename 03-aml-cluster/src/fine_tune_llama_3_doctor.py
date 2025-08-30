@@ -29,6 +29,14 @@ import torch
 # Set environment variables for memory optimization
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
+# Prefer TF32 on Ampere+ for speed, safe numerics
+if torch.cuda.is_available():
+    try:
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+    except Exception:
+        pass
+
 def prepare_data(finetune_dataset, num_data_rows, hf_cache, base_model, eval_size):
     tokenizer = AutoTokenizer.from_pretrained(base_model, cache_dir=hf_cache)
 
@@ -53,10 +61,19 @@ def prepare_data(finetune_dataset, num_data_rows, hf_cache, base_model, eval_siz
 
 def do_training(base_model, eval_size, dataset, finetuned_model, cache_dir, num_epochs, batch_size):
 
+    # Detect bf16 support (A100/H100 or compute capability >= 8.0)
+    use_bf16 = False
+    if torch.cuda.is_available():
+        try:
+            major_cc, _ = torch.cuda.get_device_capability(0)
+            use_bf16 = major_cc >= 8
+        except Exception:
+            use_bf16 = False
+
     qlora_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.float16,
+        bnb_4bit_compute_dtype=torch.bfloat16 if use_bf16 else torch.float16,
         bnb_4bit_use_double_quant=True
     )
 
@@ -86,6 +103,23 @@ def do_training(base_model, eval_size, dataset, finetuned_model, cache_dir, num_
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
+    # Prepare model for k-bit training (enables input grads, casts layer norms, etc.)
+    model = prepare_model_for_kbit_training(model)
+
+    # Disable cache when using gradient checkpointing
+    if hasattr(model, "config"):
+        try:
+            model.config.use_cache = False
+        except Exception:
+            pass
+
+    # Some models expose a helper to ensure inputs require grads for checkpointing
+    if hasattr(model, "enable_input_require_grads"):
+        try:
+            model.enable_input_require_grads()
+        except Exception:
+            pass
+
     model, tokenizer = setup_chat_format(model, tokenizer)
 
 
@@ -99,7 +133,10 @@ def do_training(base_model, eval_size, dataset, finetuned_model, cache_dir, num_
     model = get_peft_model(model, peft_config)
     
     # Enable gradient checkpointing to save memory
-    model.gradient_checkpointing_enable()
+    try:
+        model.gradient_checkpointing_enable()
+    except Exception:
+        pass
     
     # Clear cache and optimize memory
     if torch.cuda.is_available():
@@ -116,18 +153,22 @@ def do_training(base_model, eval_size, dataset, finetuned_model, cache_dir, num_
         optim="paged_adamw_32bit" if torch.cuda.is_available() else "adamw_torch",
         num_train_epochs=num_epochs,
         eval_strategy="steps",
-        eval_steps=0.2,
+        eval_steps=100,
         logging_steps=50,
         warmup_steps=10,
         logging_strategy="steps",
         learning_rate=2e-4,
-        fp16=torch.cuda.is_available(),
-        bf16=False,
+        # Avoid GradScaler assertion with 4-bit + 32-bit optimizer by not using fp16 scaler
+        fp16=False,
+        bf16=use_bf16,
+        gradient_checkpointing=True,
         group_by_length=True,
         report_to='azure_ml' if torch.cuda.is_available() else None,
         dataloader_pin_memory=False,  # Reduce memory usage
         save_steps=500,  # Save less frequently to reduce memory peaks
         eval_accumulation_steps=1,  # Reduce eval memory usage
+        ddp_find_unused_parameters=False,
+        dataloader_num_workers=2,
     )
 
 
@@ -159,7 +200,9 @@ def get_answer(model, tokenizer):
     ]  
 
     prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    inputs = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True).to('cuda:0')
+    # Send inputs to the same device as the model
+    device = next(model.parameters()).device if hasattr(model, 'parameters') else torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    inputs = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True).to(device)
 
     outputs = model.generate(**inputs, max_length=150, num_return_sequences=1)
     text = tokenizer.decode(outputs[0], skip_special_tokens=False)
