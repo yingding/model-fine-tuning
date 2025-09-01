@@ -1,6 +1,12 @@
 # model-fine-tuning
 sample code of model fine tuning, MLOps in Azure Cloud
 
+Availability of Serverless Fine-tuning in Hub-based Foundry project by model and region
+* https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/fine-tuning-overview#fine-tuning-availability
+
+### Phi Model
+* https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-serverless-availability#microsoft-models
+
 ## 01 AI Foundry Fine-tuning Serverless Compute
 
 #### Serverless SDK (API)
