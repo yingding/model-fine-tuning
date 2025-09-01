@@ -9,4 +9,10 @@ Home Dir `/home/azureuser`
 Sub Dir
 `~/cloudfiles/code/Users/<user_alias>`
 
+In Jupyter notebook
+default mount path: `/mnt/batch/tasks/shared/LS_root/mounts/clusters/t4sample`
+user data home path: `code/Users/<user_alias>`
+Full jupyter notebook path:
+`/mnt/batch/tasks/shared/LS_root/mounts/clusters/t4sample/code/Users/<user_alias>`
+
 ## Reference
