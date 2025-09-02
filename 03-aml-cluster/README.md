@@ -90,5 +90,9 @@ Then you got a container building job running on Serverless VM (STANDARD_E4DS_V4
 
 https://ml.azure.com/experiments/id/prepare_image/runs/imgbldrun_2ff31ee?wsid=/subscriptions/92645b1b-8a8a-4693-b8e2-c214a523fe40/resourcegroups/general-aml/workspaces/general-aml&tid=16b3c013-d300-468d-ac64-7eda0820b6d3
 
+## Create a Compute Cluster
+* https://learn.microsoft.com/en-us/azure/machine-learning/how-to-create-attach-compute-cluster?view=azureml-api-2&tabs=python
+
+
 ## References
 * sample origin Reference: https://github.com/yuvmaz/aml_labs
