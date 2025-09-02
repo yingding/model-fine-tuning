@@ -21,4 +21,7 @@ show the ssh pub key with `Get-Content`:
  Get-Content C:\Users\<user_alias>\.ssh\id_rsa_xxx.pub
 ```
 
+## Note
+* Need to turn on the VPN while creating the T4 VM due to company policy, otherwise I received a proxy issue "can not mount storage"
+
 ## Reference
