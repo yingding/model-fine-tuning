@@ -22,6 +22,10 @@ show the ssh pub key with `Get-Content`:
 ```
 
 ## Note
-* Need to turn on the VPN while creating the T4 VM due to company policy, otherwise I received a proxy issue "can not mount storage"
+* currently, Compute Instance doesn't support identity-based storage account access at the time of creation. The AML Workspace shall be configured to use storage account key access instead, so that the Compute Instance can be created.
+Otherwise you will receive an error `ein storage can't be connected, proxy error`, you will also see in the compute plane of the AML workspace, that a warning is show for your to login to connect storage.
+First deploy with key access and then switch.
+* Issue https://github.com/Azure-Samples/ai-studio-in-a-box/issues/7#issuecomment-2273346002
+* Workaround in FAQ: https://github.com/Azure-Samples/ai-studio-in-a-box?tab=readme-ov-file#faq
 
 ## Reference
