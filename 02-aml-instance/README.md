@@ -29,3 +29,5 @@ First deploy with key access and then switch.
 * Workaround in FAQ: https://github.com/Azure-Samples/ai-studio-in-a-box?tab=readme-ov-file#faq
 
 ## Reference
+
+* AML Compute Instance https://learn.microsoft.com/en-us/azure/machine-learning/concept-compute-instance?view=azureml-api-2
