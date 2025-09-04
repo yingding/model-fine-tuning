@@ -1,7 +1,9 @@
 # Fine-tuning with Apple MPS GPU on M3 MBP
 
 ## Refernce:
-* trl: Transformer Reinforcement Learning https://github.com/huggingface/trl
+Transformer Reinforcement Learning (TRL)
+* TRL Doc: https://huggingface.co/docs/trl/index
+* TRL Repo: https://github.com/huggingface/trl
 
 ## finetuning guide
 * Phi4 https://huggingface.co/microsoft/Phi-4-multimodal-instruct/discussions/1
