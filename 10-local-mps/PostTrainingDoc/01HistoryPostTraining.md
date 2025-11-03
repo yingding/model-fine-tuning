@@ -11,6 +11,6 @@
 
 ```mermaid
 flowchart LR
-    A["How to fix a car?"] -->|Before| B["How to fix a bike?"]
-    A -->|After| C["I'd be happy to help! Could you tell me what specific issue you're experiencing with your car?"]
+    A["How to fix a car?"] -->|Response Before Post-Training| B["How to fix a bike?"]
+    A -->|Response After Post-training| C["I'd be happy to help! Could you tell me what specific issue you're experiencing with your car?"]
 ```
