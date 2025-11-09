@@ -211,11 +211,3 @@ Multiple training environment, producing multiple types of data, to train your m
 4. RL Loop:
     a. Get RL data `{input, output, reward}` in RL training environments
     b. Train fine-tuned LLM with RL
-
-
-
-
-
-
-
-
