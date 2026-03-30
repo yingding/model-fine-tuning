@@ -28,6 +28,11 @@ First deploy with key access and then switch.
 * Issue https://github.com/Azure-Samples/ai-studio-in-a-box/issues/7#issuecomment-2273346002
 * Workaround in FAQ: https://github.com/Azure-Samples/ai-studio-in-a-box?tab=readme-ov-file#faq
 
+## Example of setup a custom conda env in AML Compute Instance
+* https://github.com/Azure/azureml-examples/blob/main/setup/setup-ci/setup-custom-conda-env.sh
+
 ## Reference
 
 * AML Compute Instance https://learn.microsoft.com/en-us/azure/machine-learning/concept-compute-instance?view=azureml-api-2
+* Create Compute Instance https://learn.microsoft.com/en-us/azure/machine-learning/how-to-create-compute-instance?view=azureml-api-2&tabs=python
+* start up script location https://learn.microsoft.com/en-us/azure/machine-learning/how-to-customize-compute-instance?view=azureml-api-2#create-the-setup-script
