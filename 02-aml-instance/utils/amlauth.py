@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     subscription_id: str = Field(..., env="SUBSCRIPTION_ID")
     resource_group: str = Field(..., env="RESOURCE_GROUP")
     workspace: str = Field(..., env="WORKSPACE")
+    ssh_pub_key_name: str = Field(..., env="SSH_PUB_KEY_NAME")
  
     class Config:
         """Pydantic model configuration"""
