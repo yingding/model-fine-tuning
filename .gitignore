@@ -210,3 +210,9 @@ __marimo__/
 
 **/mlruns/
 **/llama3-8b-chat-doctor/
+
+**/Meta-Llama-3-8B-SFT/
+**/10-local-mps/data
+**/10-local-mps/models
+
+**/.DS_Store
