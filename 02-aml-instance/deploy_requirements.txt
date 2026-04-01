@@ -4,3 +4,4 @@ ipykernel==7.2.0
 pydantic==2.12.5
 pydantic_settings==2.13.1
 python-dotenv==1.2.2
+azure-mgmt-storage==24.0.1
