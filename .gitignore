@@ -210,9 +210,13 @@ __marimo__/
 
 **/mlruns/
 **/llama3-8b-chat-doctor/
-
 **/Meta-Llama-3-8B-SFT/
 **/10-local-mps/data
 **/10-local-mps/models
-
+**/data/
+**/tmp/
+**/**-SFT/
+**/models/
+# ignore config/*.env to avoid accidentally committing env files with secrets, but allow config/ if there are non-env files that need to be committed
+*.env
 **/.DS_Store
