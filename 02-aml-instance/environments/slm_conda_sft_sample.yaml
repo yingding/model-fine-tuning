@@ -1,0 +1,20 @@
+name: sft-notebook
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.14
+  - pip>=24.2
+  - pip:
+    - torch==2.11.0
+    - torchvision==0.26.0
+    - transformers==5.4.0
+    - huggingface-hub==1.8.0                   
+    - tqdm==4.67.3
+    - datasets==4.8.4
+    - mlflow
+    - azureml-mlflow==1.62.0.post2 
+    - azure-ai-ml==1.32.0
+    - python-dotenv==1.2.2
+    - ipykernel>=6.0
+    - safetensors==0.7.0

@@ -1,28 +1,25 @@
 #!/bin/bash
 set -e
-
-# set the name of the conda environment to create, default to "sft-notebook" if not set
 ENV_NAME="${ENV_NAME:-sft-notebook}"
 
-# This script creates a custom conda environment and kernel based on a sample yml file.
-source /anaconda/etc/profile.d/conda.sh
+# 1. Remove broken tensorflow-serving-apt repo (403) and update apt
+sudo rm -f /etc/apt/sources.list.d/*tensorflow*
+sudo sed -i '/tensorflow-serving-apt\|storage.googleapis.com.*tensorflow/d' /etc/apt/sources.list 2>/dev/null || true
+sudo apt-get update -y || true
 
-# Accept Anaconda Terms of Service for non-interactive provisioning.
-# Required when the 'defaults' channel (pkgs/main, pkgs/r) is listed in the conda env yaml.
+# 2. Install CUDA 12.6 forward-compat for driver 535.274.02 cuda 12.2 (no driver removal/reboot needed)
+sudo apt-get install -y cuda-compat-12-6
+
+# 3. Create conda env and register Jupyter kernel
+source /anaconda/etc/profile.d/conda.sh
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
 conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
-
 conda env create -f /tmp/aml-setup/slm_conda_sft.yaml
-
-echo "Activating new conda environment: $ENV_NAME"
 conda activate "$ENV_NAME"
 conda install -y ipykernel
 
-# Pass ENV_NAME explicitly — sudo -i starts a clean login shell that doesn't inherit env vars
 sudo -u azureuser -i ENV_NAME="$ENV_NAME" bash << 'EOF'
-echo "Installing kernel for env: $ENV_NAME"
 source /anaconda/etc/profile.d/conda.sh
 conda activate "$ENV_NAME"
 python -m ipykernel install --user --name "$ENV_NAME" --display-name "$ENV_NAME"
-echo "Conda environment setup successfully."
 EOF
