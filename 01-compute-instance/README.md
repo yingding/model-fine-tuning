@@ -1,38 +1,62 @@
-# Fine-tuning with GPU Compute Instance in AML
+# Fine-Tuning Phi-4 with AML Compute Instance
 
-## Storage
+Fine-tune **Phi-4-mini-instruct** on a T4 GPU using QLoRA — under $3 in about 2 hours.
 
-Notebook partition are mounted in Computer Instance under the path 
-`/home/azureuser/cloudfiles/code/Users/<user_alias>`
+## 📚 Contents
 
-Home Dir `/home/azureuser`
-Sub Dir
-`~/cloudfiles/code/Users/<user_alias>`
+- [Fine-Tuning Phi-4 with AML Compute Instance](#fine-tuning-phi-4-with-aml-compute-instance)
+  - [📚 Contents](#-contents)
+  - [📝 Overview](#-overview)
+  - [🚀 Quick Start](#-quick-start)
+  - [📖 Documentation](#-documentation)
+  - [📓 Tutorial](#-tutorial)
+  - [📄 License](#-license)
 
-In Jupyter notebook
-default mount path: `/mnt/batch/tasks/shared/LS_root/mounts/clusters/t4sample`
-user data home path: `code/Users/<user_alias>`
-Full jupyter notebook path:
-`/mnt/batch/tasks/shared/LS_root/mounts/clusters/t4sample/code/Users/<user_alias>`
+## 📝 Overview
 
-## useful cmds
-show the ssh pub key with `Get-Content`:
-```PowerShell
- Get-Content C:\Users\<user_alias>\.ssh\id_rsa_xxx.pub
+This directory contains everything needed to fine-tune Phi-4-mini-instruct on an
+Azure Machine Learning GPU Compute Instance:
+
+- Notebooks to **provision**, **monitor**, and **fine-tune** on a T4 GPU
+- An inline creation script that installs a custom **conda environment** with CUDA compatibility
+- Configuration templates and utility modules for AML authentication
+
+## 🚀 Quick Start
+
+See [01-Quick-Start.md](01-Quick-Start.md) for the full setup guide.
+
+```bash
+cd model-fine-tuning/01-compute-instance
+python3.14 -m venv .venv && source .venv/bin/activate
+pip install --upgrade pip && pip install -r deploy_requirements.txt
+cp config/.env.example config/.env   # edit with your values
 ```
 
-## Note
-* currently, Compute Instance doesn't support identity-based storage account access at the time of creation. The AML Workspace shall be configured to use storage account key access instead, so that the Compute Instance can be created.
-Otherwise you will receive an error `ein storage can't be connected, proxy error`, you will also see in the compute plane of the AML workspace, that a warning is show for your to login to connect storage.
-First deploy with key access and then switch.
-* Issue https://github.com/Azure-Samples/ai-studio-in-a-box/issues/7#issuecomment-2273346002
-* Workaround in FAQ: https://github.com/Azure-Samples/ai-studio-in-a-box?tab=readme-ov-file#faq
+## 📖 Documentation
 
-## Example of setup a custom conda env in AML Compute Instance
-* https://github.com/Azure/azureml-examples/blob/main/setup/setup-ci/setup-custom-conda-env.sh
+| Document | Description |
+|----------|-------------|
+| [Quick Start](01-Quick-Start.md) | Set up local environment and run the notebooks |
+| [About Compute Instance](02-About-Compute-Instance.md) | Connect, storage, conda env, lifecycle management |
+| [Custom Env Setup](03-Custom-Env-Setup.md) | Inline creation script, CUDA compat, troubleshooting |
 
-## Reference
+## 📓 Tutorial
 
-* AML Compute Instance https://learn.microsoft.com/en-us/azure/machine-learning/concept-compute-instance?view=azureml-api-2
-* Create Compute Instance https://learn.microsoft.com/en-us/azure/machine-learning/how-to-create-compute-instance?view=azureml-api-2&tabs=python
-* start up script location https://learn.microsoft.com/en-us/azure/machine-learning/how-to-customize-compute-instance?view=azureml-api-2#create-the-setup-script
+Step-by-step MkDocs tutorial pages under [`docs/`](docs/):
+
+| Step | Page |
+|------|------|
+| 00 | [Prerequisites](docs/00-prerequisites.md) |
+| 01 | [Create AML Workspace](docs/01-create-aml-workspace.md) |
+| 02 | [Provision Compute Instance](docs/02-provision-compute-instance.md) |
+| 03 | [Custom Conda Environment](docs/03-custom-conda-environment.md) |
+| 04 | [Connect and Work with CI](docs/04-connect-and-work-with-ci.md) |
+| 05 | [Prepare Training Data](docs/05-prepare-training-data.md) |
+| 06 | [Fine-Tune Phi-4](docs/06-fine-tune-phi4.md) |
+| 07 | [Evaluate the Model](docs/07-evaluate-model.md) |
+| 08 | [Deploy and Inference](docs/08-deploy-and-inference.md) |
+| — | [Reference](docs/reference.md) |
+
+## 📄 License
+
+See root [LICENSE](../LICENSE).
