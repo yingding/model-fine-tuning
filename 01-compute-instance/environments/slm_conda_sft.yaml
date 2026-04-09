@@ -1,0 +1,31 @@
+name: sft-notebook
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.14
+  - pip>=24.2
+  - ipywidgets>=8.1.8
+  - ipykernel>=6.0
+  - pip:
+    - --extra-index-url https://download.pytorch.org/whl/cu126
+    - torch==2.11.0+cu126
+    - torchaudio==2.11.0+cu126
+    - torchvision==0.26.0+cu126
+    - transformers==5.5.0
+    - huggingface-hub==1.9.2                   
+    - tqdm==4.67.3
+    - datasets==4.8.4
+    - mlflow>=3.9.0
+    # - azureml-sdk==1.62.0 # aml v1 sdk not needed anymore
+    - azureml-mlflow==1.62.0.post2 
+    - azure-ai-ml==1.32.0 # aml v2 sdk
+    - python-dotenv==1.2.2
+    - pydantic-settings==2.13.1
+    - pydantic==2.12.5
+    - safetensors==0.7.0
+    - accelerate==1.13.0
+    - trl==1.0.0
+    - peft==0.18.1
+    - bitsandbytes==0.49.2
+    - applyllm==0.0.10

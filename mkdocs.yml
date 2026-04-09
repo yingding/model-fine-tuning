@@ -1,0 +1,57 @@
+site_name: Phi-4 Fine-Tuning with AML Compute Instance
+site_description: Step-by-step tutorial for fine-tuning Microsoft Phi-4 models on Azure Machine Learning GPU Compute Instances.
+site_url: https://yingding.github.io/model-fine-tuning/
+repo_name: model-fine-tuning
+repo_url: https://github.com/yingding/model-fine-tuning
+edit_uri: edit/main/
+docs_dir: .
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: amber
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.footer
+    - content.code.copy
+    - content.action.edit
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - tables
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+extra_javascript:
+  - assets/javascripts/external-links.js
+
+nav:
+  - Home: index.md
+  - 1. Fine-Tuning with Azure Compute Instance (Phi SLM):
+    - 00 Prerequisites: 01-compute-instance/docs/00-prerequisites.md
+    - 01 Create AML Workspace: 01-compute-instance/docs/01-create-aml-workspace.md
+    - 02 Provision Compute Instance: 01-compute-instance/docs/02-provision-compute-instance.md
+    - 03 Custom Conda Environment: 01-compute-instance/docs/03-custom-conda-environment.md
+    - 04 Connect and Work with CI: 01-compute-instance/docs/04-connect-and-work-with-ci.md
+    - 05 Prepare Training Data: 01-compute-instance/docs/05-prepare-training-data.md
+    - 06 Fine-Tune Phi-4: 01-compute-instance/docs/06-fine-tune-phi4.md
+    - 07 Evaluate the Model: 01-compute-instance/docs/07-evaluate-model.md
+    - 08 Deploy and Inference: 01-compute-instance/docs/08-deploy-and-inference.md
+    - Reference: 01-compute-instance/docs/reference.md
+  - 2. Fine-Tuning with Azure Compute Cluster (LLama):
+    - Coming Soon: 02-compute-cluster/index.md
+  - 3. Fine-Tuning with Foundry Serverless:
+    - Coming Soon: 03-foundry-serverless/index.md
+  - 4. Fine-Tuning with Local MPS Accelerator:
+    - Coming Soon: 04-local-mps/index.md
