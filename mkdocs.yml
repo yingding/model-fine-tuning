@@ -1,10 +1,11 @@
-site_name: Phi-4 Fine-Tuning with AML Compute Instance
+site_name: Model Fine-Tuning Tutorials
+site_author: Yingding Wang
 site_description: Step-by-step tutorial for fine-tuning Microsoft Phi-4 models on Azure Machine Learning GPU Compute Instances.
 site_url: https://yingding.github.io/model-fine-tuning/
 repo_name: model-fine-tuning
 repo_url: https://github.com/yingding/model-fine-tuning
 edit_uri: edit/main/
-docs_dir: .
+docs_dir: docs
 
 theme:
   name: material
