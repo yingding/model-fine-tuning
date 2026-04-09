@@ -7,14 +7,14 @@ Step-by-step tutorials for fine-tuning language models on Azure and local hardwa
 ## 📚 Contents
 
 - [Model Fine-Tuning Tutorials](#model-fine-tuning-tutorials)
-  - [📚 Contents](#-contents)
-  - [📝 Overview](#-overview)
-  - [📦 Tutorials](#-tutorials)
+  - [📚 Contents](#contents)
+  - [📝 Overview](#overview)
+  - [📦 Tutorials](#tutorials)
     - [1. Fine-Tuning with Azure Compute Instance (Phi SLM)](#1-fine-tuning-with-azure-compute-instance-phi-slm)
     - [2. Fine-Tuning with Azure Compute Cluster (LLama)](#2-fine-tuning-with-azure-compute-cluster-llama)
     - [3. Fine-Tuning with Foundry Serverless](#3-fine-tuning-with-foundry-serverless)
     - [4. Fine-Tuning with Local MPS Accelerator](#4-fine-tuning-with-local-mps-accelerator)
-  - [📂 Repository Structure](#-repository-structure)
+  - [📂 Repository Structure](#repository-structure)
 
 ## 📝 Overview
 

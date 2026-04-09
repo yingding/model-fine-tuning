@@ -5,6 +5,7 @@ site_url: https://yingding.github.io/model-fine-tuning/
 repo_name: model-fine-tuning
 repo_url: https://github.com/yingding/model-fine-tuning
 edit_uri: edit/main/
+copyright: Copyright &copy; 2026 Yingding Wang
 docs_dir: docs
 
 theme:
