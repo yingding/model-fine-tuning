@@ -1,32 +1,34 @@
-# model-fine-tuning
-sample code of model fine tuning, MLOps in Azure Cloud
+# Model Fine-Tuning
 
-Availability of Serverless Fine-tuning in Hub-based Foundry project by model and region
-* https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/fine-tuning-overview#fine-tuning-availability
+Fine-tune **Phi-4-mini-instruct** for under **$3** in about **2 hours** on a single T4 GPU in Azure.
 
-### Phi Model
-* https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-serverless-availability#microsoft-models
+No massive clusters. No expensive API calls. Just QLoRA, a small dataset, and an AML Compute Instance.
 
-## 01 AI Foundry Fine-tuning Serverless Compute
+> Disclaimer: This is a learning/sample artifact — not production hardened.
 
-#### Serverless SDK (API)
+---
 
-Reference
-* Foundry Serverless Fine-tuing https://learn.microsoft.com/en-us/azure/ai-foundry/concepts/fine-tuning-overview
-* sample dataset for fine-tuning (custom) AI foundry models https://github.com/Azure-Samples/AIFoundry-Customization-Datasets
-* Serverless Fine-tuning over SDK and API (preview) https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/fine-tune-serverless?tabs=chat-completion&pivots=programming-language-python
-* azure sdk https://github.com/Azure/azure-sdk-for-python
-* Region availability for models in serverless APIs https://learn.microsoft.com/en-us/azure/ai-foundry/how-to/deploy-models-serverless-availability
+## Get Started
 
-#### AML Manage Models
-* https://learn.microsoft.com/en-us/azure/machine-learning/how-to-manage-models?view=azureml-api-2&tabs=cli
+- **[Tutorial](index.md)** — Step-by-step guide from workspace setup to model deployment
+- **[Technical Background](TechBackGround.md)** — References, model availability, and related resources
 
-#### Fine tuning GxP
-* https://deepwiki.com/microsoft/PhiCookBook/5.1-fine-tuning-with-azure-ai-foundry
-* https://github.com/MicrosoftDocs/azure-ai-docs/blob/main/articles/ai-foundry/how-to/fine-tune-serverless.md
-* azureml-mlflow https://learn.microsoft.com/en-us/azure/machine-learning/concept-mlflow?view=azureml-api-2
-* https://github.com/Azure/azureml-examples/blob/main/sdk/python/jobs/finetuning/standalone/model-as-a-service/chat-completion/chat_completion_with_model_as_service.ipynb
-* finetuning and distrillation https://github.com/microsoft/Build25-LAB32
+## What's Inside
+
+| Tutorial | Model | Compute | Status |
+|----------|-------|---------|--------|
+| 1. Azure Compute Instance | Phi-4-mini-instruct | 1× T4 GPU | **Available** |
+| 2. Azure Compute Cluster | LLama | Multi-node | Coming soon |
+| 3. Foundry Serverless | Phi | Serverless | Coming soon |
+| 4. Local MPS Accelerator | LLama | Apple Silicon | Coming soon |
+
+## Author
+
+Yingding Wang
+
+## License
+
+See [LICENSE](LICENSE).
 
 
 
