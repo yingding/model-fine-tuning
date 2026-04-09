@@ -13,7 +13,7 @@ $ENV_DIR="$env:USERPROFILE\Documents\VENV\";
 # absolute path of requirements.txt to install for the python venv
 $PROJ_DIR="$env:USERPROFILE\Documents\VCS\democollections\model-fine-tuning";
 # $SubProj="\"
-$SubProj="01-serverless\hub\"
+$SubProj="03-foundry-serverless\hub"
 $typeProj=""
 $PackageFile="$PROJ_DIR\${SubProj}requirements${typeProj}.txt";
 
@@ -59,7 +59,7 @@ ENV_FULL_NAME="${ENV_NAME}${VERSION}${ENV_SURFIX}";
 ENV_DIR="$HOME/Code/VENV";
 PROJ_DIR="$HOME/Code/VCS/ai/model-fine-tuning";
 
-SUB_PROJ="01-serverless/hub";
+SUB_PROJ="03-foundry-serverless/hub";
 PACKAGE_FILE="${PROJ_DIR}/${SUB_PROJ}/requirements.txt";
 
 source ${ENV_DIR}/${ENV_FULL_NAME}/bin/activate;

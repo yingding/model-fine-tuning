@@ -1,4 +1,4 @@
-# Finetuning with Local MPS Accelerator
+# Fine-Tuning with Local MPS Accelerator
 
 *Coming soon.*
 

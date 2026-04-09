@@ -1,4 +1,4 @@
-# Finetuning with Azure Compute Cluster (LLama)
+# Fine-Tuning with Azure Compute Cluster (LLama)
 
 *Coming soon.*
 

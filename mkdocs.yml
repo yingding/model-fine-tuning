@@ -38,7 +38,7 @@ extra_javascript:
 
 nav:
   - Home: index.md
-  - 1. Finetuning with Azure Compute Instance (Phi SLM):
+  - 1. Fine-Tuning with Azure Compute Instance (Phi SLM):
     - 00 Prerequisites: 01-compute-instance/docs/00-prerequisites.md
     - 01 Create AML Workspace: 01-compute-instance/docs/01-create-aml-workspace.md
     - 02 Provision Compute Instance: 01-compute-instance/docs/02-provision-compute-instance.md
@@ -49,9 +49,9 @@ nav:
     - 07 Evaluate the Model: 01-compute-instance/docs/07-evaluate-model.md
     - 08 Deploy and Inference: 01-compute-instance/docs/08-deploy-and-inference.md
     - Reference: 01-compute-instance/docs/reference.md
-  - 2. Finetuning with Azure Compute Cluster (LLama):
+  - 2. Fine-Tuning with Azure Compute Cluster (LLama):
     - Coming Soon: 02-compute-cluster/index.md
-  - 3. Finetuning with Foundry Serverless:
+  - 3. Fine-Tuning with Foundry Serverless:
     - Coming Soon: 03-foundry-serverless/index.md
-  - 4. Finetuning with Local MPS Accelerator:
+  - 4. Fine-Tuning with Local MPS Accelerator:
     - Coming Soon: 04-local-mps/index.md

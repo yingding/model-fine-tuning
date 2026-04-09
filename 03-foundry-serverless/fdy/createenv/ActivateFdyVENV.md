@@ -59,7 +59,7 @@ ENV_FULL_NAME="${ENV_NAME}${VERSION}${ENV_SURFIX}";
 ENV_DIR="$HOME/Code/VENV";
 PROJ_DIR="$HOME/Code/VCS/ai/model-fine-tuning";
 
-SUB_PROJ="01-serverless/fdy";
+SUB_PROJ="03-foundry-serverless/fdy";
 PACKAGE_FILE="${PROJ_DIR}/${SUB_PROJ}/requirements.txt";
 
 source ${ENV_DIR}/${ENV_FULL_NAME}/bin/activate;
