@@ -1,7 +1,7 @@
 # 06 — Fine-Tune Phi-4
 
 This is the core step: fine-tuning **Phi-4-mini-instruct** using **QLoRA** on a
-T4 GPU. The corresponding notebook is **`aml_ci_finetung_phi.ipynb`**.
+T4 GPU. The corresponding notebook is **`aml_ci_finetune_phi.ipynb`**.
 
 ---
 

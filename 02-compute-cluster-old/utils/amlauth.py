@@ -1,4 +1,6 @@
-from pydantic import Field, ValidationError
+import os
+from typing import Optional
+from pydantic import BaseModel, Field, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from azure.identity import DefaultAzureCredential, InteractiveBrowserCredential
@@ -11,11 +13,10 @@ class Settings(BaseSettings):
     Application settings loaded from environment variables.
     All settings are validated through Pydantic's type system.
     """
+    workspace_name: str = Field(..., env="WORKSPACE_NAME")
+    resource_group_name: str = Field(..., env="RESOURCE_GROUP_NAME")
     subscription_id: str = Field(..., env="SUBSCRIPTION_ID")
-    resource_group: str = Field(..., env="RESOURCE_GROUP")
-    workspace: str = Field(..., env="WORKSPACE")
-    ssh_pub_key_name: str = Field(..., env="SSH_PUB_KEY_NAME")
- 
+
     class Config:
         """Pydantic model configuration"""
         # env_file = f"{DOTENV}"
@@ -41,9 +42,13 @@ class AuthHelper:
         credential = None
         try:
             credential = DefaultAzureCredential()
-            # credential.get_token("https://management.azure.com/.default")
+            credential.get_token("https://management.azure.com/.default")
+            # credential.get_token("https://ai.azure.com/.default")
             # print("DefaultAzureCredential authentication OK")
         except Exception:
             credential = InteractiveBrowserCredential()
             # print("Falling back to InteractiveBrowserCredential")
         return credential
+    
+# import pydantic 
+# print(f"Pydantic version: {pydantic.VERSION}")

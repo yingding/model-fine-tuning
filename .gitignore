@@ -221,3 +221,5 @@ __marimo__/
 *.env
 **/.DS_Storesite/
 **/.DS_Store
+# AML job log dumps
+.job-logs/

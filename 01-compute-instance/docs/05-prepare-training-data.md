@@ -3,7 +3,7 @@
 This step loads and formats the training dataset for supervised fine-tuning (SFT)
 of Phi-4-mini-instruct.
 
-The corresponding notebook is **`aml_ci_finetung_phi.ipynb`**, sections 3–4.
+The corresponding notebook is **`aml_ci_finetune_phi.ipynb`**, sections 3–4.
 
 ---
 

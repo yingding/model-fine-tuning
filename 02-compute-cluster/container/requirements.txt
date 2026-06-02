@@ -1,0 +1,67 @@
+# Pip layer ON TOP of nvcr.io/nvidia/pytorch:26.05-py3
+#
+# The base image already ships (and `/etc/pip/constraint.txt` pins):
+#   torch 2.12.0a0, torchvision, torchaudio, apex, transformer-engine,
+#   deepspeed, flash-attn, triton, NCCL, cuDNN, CUDA 13.2
+# So we do NOT re-install any of those — pip will respect the constraints file
+# and fail loudly if we try.
+#
+# What we add here = SFT/PEFT HuggingFace stack + AML MLflow tracking.
+
+# ─── HuggingFace SFT stack ────────────────────────────────────────────────
+transformers==5.9.0
+accelerate==1.13.0
+datasets==4.8.5
+trl==1.5.1
+peft==0.19.1
+bitsandbytes==0.49.2
+optimum==2.1.0
+huggingface-hub==1.17.0
+hf-xet==1.5.0
+
+# ─── Tracking / observability ─────────────────────────────────────────────
+mlflow>=2.22.1
+azureml-mlflow==1.62.0.post2
+tensorboard
+
+# ─── Misc utilities used by training scripts ──────────────────────────────
+regex
+py-cpuinfo==9.0.0
+tqdm~=4.67.3
+
+# ─── Already provided by nvcr.io/nvidia/pytorch:26.05-py3 (DO NOT enable) ──
+# Listed for reference — uncommenting will conflict with /etc/pip/constraint.txt
+# and likely break the build or produce an unstable env. Override only if you
+# know what you're doing (edit /etc/pip/constraint.txt in the Dockerfile first).
+#
+# torch==2.12.0           # base: 2.12.0a0+5aff3928d8
+# torchvision==0.27.0     # base: matched to torch 2.12
+# torchaudio==2.11.0      # base: matched to torch 2.12
+# deepspeed==0.19.1       # base: NVIDIA-tested build for this torch + CUDA
+# triton                  # base: pinned to torch ABI
+# transformer-engine      # base: 2.15 (FP8 on Hopper)
+# apex                    # base: NVIDIA fork, NVIDIA-tested
+# flash-attn              # base: pre-built against this torch + CUDA
+# nccl                    # base: matched to CUDA 13.2
+# torch-tb-profiler~=0.4.3
+#
+# ─── Removed (was for online-endpoint inference serving, not training) ────
+# azureml-core==1.60.0.post1
+# azureml-dataset-runtime==1.62.0
+# azureml-defaults==1.62.0
+# azure-ai-ml==1.33.0
+# azureml-contrib-services==1.62.0
+# azureml-inference-server-http
+# inference-schema
+# MarkupSafe==3.0.3
+# pybind11
+# urllib3==2.7.0
+# requests==2.34.2
+# pillow>=11.3.0
+# cryptography>=48.0.0
+# aiohttp>=3.13.5
+# py-spy==0.4.2
+# debugpy~=1.8.20
+# ipykernel~=7.2.0
+# psutil~=7.2.2
+# matplotlib~=3.10.9
