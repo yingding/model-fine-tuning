@@ -8,3 +8,7 @@ azure-mgmt-storage==25.0.0
 azure-mgmt-network==30.2.0
 azure-mgmt-authorization==4.0.0
 # azure-mgmt-containerregistrytasks==1.0.0b1  # no longer needed; build is monitored via ml_client.jobs in the `prepare_image` experiment
+# Used by smoke/verify_dataset_access.py to read blob data directly (firewall + RBAC test).
+# Note: azureml-fsspec / mltable are NOT installable on Apple Silicon (require dotnetcore2 with no arm64 wheel),
+# so the smoke test uses azure-storage-blob + ml_client.data.download() instead.
+azure-storage-blob==12.29.0
