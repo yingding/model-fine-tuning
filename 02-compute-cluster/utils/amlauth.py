@@ -15,6 +15,9 @@ class Settings(BaseSettings):
     resource_group: str = Field(..., env="RESOURCE_GROUP")
     workspace: str = Field(..., env="WORKSPACE")
     ssh_pub_key_name: str = Field(..., env="SSH_PUB_KEY_NAME")
+    # Optional: HuggingFace Hub token for non-throttled downloads and gated
+    # models. Empty string = anonymous (slow). Loaded from HF_TOKEN env var.
+    hf_token: str = Field(default="", env="HF_TOKEN")
  
     class Config:
         """Pydantic model configuration"""

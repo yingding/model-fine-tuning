@@ -365,7 +365,11 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--data_dir", required=True,
                    help="Mounted folder produced by prepare_dataset.py")
-    p.add_argument("--base_model", default="NousResearch/Meta-Llama-3-8B-Instruct")
+    p.add_argument("--base_model", default="NousResearch/Meta-Llama-3-8B-Instruct",
+                   help="HF model id OR a local path (e.g. mounted from a "
+                        "registered AML Model asset produced by "
+                        "download_base_model.py). Local paths bypass the HF "
+                        "Hub entirely — required for offline GPU jobs.")
     p.add_argument("--batch_size", type=int, default=1)
     p.add_argument("--num_epochs", type=int, default=1)
     p.add_argument("--max_steps",  type=int, default=-1,
