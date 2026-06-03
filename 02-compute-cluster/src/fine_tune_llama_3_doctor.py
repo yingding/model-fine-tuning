@@ -67,9 +67,26 @@ if not getattr(mlflow.log_params, "_is_truncated_patch", False):
 
 
 def load_prepared_dataset(data_dir: str):
-    """Load DatasetDict written by prepare_dataset.py:save_to_disk."""
+    """Load DatasetDict written by prepare_dataset.py:save_to_disk.
+
+    The dataset folder is typically mounted READ-ONLY by AML. TRL's
+    SFTTrainer._prepare_dataset internally calls `dataset.map(...)` to add
+    EOS tokens, and `datasets.map` writes its Arrow cache next to the source
+    files — on a read-only mount that raises `OSError: [Errno 30] Read-only
+    file system`. Workaround: materialize each split in-memory (small
+    overhead for the curated medical-chatbot dataset, ~30 MB on disk).
+    """
     print(f"Loading prepared dataset from: {data_dir}")
     ds = load_from_disk(data_dir)
+    # Re-load each split into RAM so subsequent .map calls cache in memory,
+    # not next to the read-only mount.
+    for split in list(ds.keys()):
+        ds[split] = ds[split].map(
+            lambda x: x,
+            keep_in_memory=True,
+            load_from_cache_file=False,
+            desc=f"materialize {split} in memory",
+        )
     print(f"Splits     : {list(ds.keys())}")
     print(f"Train rows : {len(ds['train'])}")
     print(f"Test  rows : {len(ds['test'])}")
@@ -165,7 +182,6 @@ def do_training(base_model: str, dataset, tokenizer, finetuned_model: str,
         fp16=False,
         bf16=use_bf16,
         gradient_checkpointing=True,
-        group_by_length=True,
         report_to="mlflow",
         dataloader_pin_memory=False,
         save_steps=500,
@@ -204,19 +220,144 @@ def do_training(base_model: str, dataset, tokenizer, finetuned_model: str,
     return model, tokenizer, trainer
 
 
-def quick_inference(model, tokenizer):
-    messages = [{
-        "role": "user",
-        "content": ("Hello doctor, I get red blotches on my skin whenever "
-                    "I'm next to a cat. What can I do?"),
-    }]
-    prompt = tokenizer.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True,
-    )
+def quick_inference(model, tokenizer, prompts=None):
+    """Run a few sample prompts on the in-memory trained model.
+
+    Returns a list of {prompt, response} dicts so the caller can log them
+    as a job artifact (visible in the AML run's Outputs + logs).
+    """
+    if prompts is None:
+        prompts = [
+            ("Hello doctor, I get red blotches on my skin whenever I'm next "
+             "to a cat. What can I do?"),
+            ("I have been having severe headaches for the past three days, "
+             "especially in the mornings. Should I be worried?"),
+            ("My 5-year-old has a fever of 39°C and a sore throat. Is it "
+             "safe to give ibuprofen?"),
+        ]
     device = next(model.parameters()).device
-    inputs = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True).to(device)
-    outputs = model.generate(**inputs, max_new_tokens=200, num_return_sequences=1)
-    return tokenizer.decode(outputs[0], skip_special_tokens=False)
+    results = []
+    for content in prompts:
+        messages = [{"role": "user", "content": content}]
+        prompt = tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True,
+        )
+        inputs = tokenizer(prompt, return_tensors="pt", padding=True, truncation=True).to(device)
+        outputs = model.generate(
+            **inputs, max_new_tokens=200, num_return_sequences=1,
+        )
+        response = tokenizer.decode(outputs[0], skip_special_tokens=False)
+        results.append({"prompt": content, "response": response})
+    return results
+
+
+def register_artifacts(args, finetuned_model, output_dir, sample_outputs=None,
+                       trainer=None):
+    """Register adapter + merged model in the AML model registry via SDK v2.
+
+    Matches the pattern used by 01-compute-instance/aml_ci_finetune_phi.ipynb:
+    `ml_client.models.create_or_update(Model(path=..., name=..., type=...))`.
+
+    Workspace coords inside an AML job are injected as env vars
+    (AZUREML_ARM_SUBSCRIPTION / AZUREML_ARM_RESOURCEGROUP / AZUREML_ARM_WORKSPACE_NAME).
+    Auth uses DefaultAzureCredential, which on the compute cluster picks up
+    the cluster's system-assigned managed identity (Step 3 of the prep
+    notebook grants it the required RBAC).
+    """
+    try:
+        from azure.ai.ml import MLClient
+        from azure.ai.ml.constants import AssetTypes
+        from azure.ai.ml.entities import Model
+        from azure.identity import DefaultAzureCredential
+    except ImportError as e:
+        print(f"[register] azure-ai-ml not available ({e}) — skipping registry upload.")
+        return
+
+    sub_id  = os.environ.get("AZUREML_ARM_SUBSCRIPTION")
+    rg_name = os.environ.get("AZUREML_ARM_RESOURCEGROUP")
+    ws_name = os.environ.get("AZUREML_ARM_WORKSPACE_NAME")
+    if not (sub_id and rg_name and ws_name):
+        print("[register] AZUREML_ARM_* env vars not set — likely a local/debug run; "
+              "skipping registry upload.")
+        return
+
+    try:
+        ml_client = MLClient(
+            credential=DefaultAzureCredential(),
+            subscription_id=sub_id,
+            resource_group_name=rg_name,
+            workspace_name=ws_name,
+        )
+    except Exception as e:  # noqa: BLE001
+        print(f"[register] MLClient init failed: {e}")
+        return
+
+    # Common description block with training context.
+    desc_base = (
+        f"Fine-tuned {args.base_model} with QLoRA + SFTTrainer\n"
+        f"LoRA: r={args.lora_r}, alpha={args.lora_alpha}, dropout={args.lora_dropout}\n"
+        f"Training: epochs={args.num_epochs}, max_steps={args.max_steps}, "
+        f"lr={args.learning_rate}, batch={args.batch_size}x{args.grad_accum} grad_accum"
+    )
+    if trainer is not None:
+        log_history = trainer.state.log_history
+        train_logs = [l for l in log_history if "loss" in l]
+        eval_logs  = [l for l in log_history if "eval_loss" in l]
+        if train_logs:
+            desc_base += f"\nFinal train loss: {train_logs[-1]['loss']:.4f}"
+        if eval_logs:
+            desc_base += f"\nFinal eval loss: {eval_logs[-1]['eval_loss']:.4f}"
+
+    common_tags = {
+        "base_model":     args.base_model,
+        "lora_r":         str(args.lora_r),
+        "lora_alpha":     str(args.lora_alpha),
+        "lora_dropout":   str(args.lora_dropout),
+        "max_seq_length": str(args.max_seq_length),
+        "num_epochs":     str(args.num_epochs),
+        "learning_rate":  str(args.learning_rate),
+        "quantization":   "QLoRA-4bit-NF4",
+    }
+
+    # 1) LoRA adapter (small, reusable on top of compatible base models)
+    adapter_dir = os.path.join(output_dir, finetuned_model)
+    print(f"[register] Registering LoRA adapter: {adapter_dir}")
+    try:
+        registered_lora = ml_client.models.create_or_update(Model(
+            path=adapter_dir,
+            name=f"{finetuned_model}-lora",
+            type=AssetTypes.CUSTOM_MODEL,
+            description=f"{desc_base}\nKind: LoRA adapter + tokenizer",
+            tags={**common_tags, "kind": "lora-adapter"},
+        ))
+        print(f"[register]   name={registered_lora.name}  version={registered_lora.version}")
+    except Exception as e:  # noqa: BLE001
+        print(f"[register]   ❌ adapter registration failed: {e}")
+
+    # 2) Merged full model (deployable as-is)
+    full_dir = os.path.join(output_dir, f"{finetuned_model}_full")
+    print(f"[register] Registering merged full model: {full_dir}")
+    try:
+        registered_full = ml_client.models.create_or_update(Model(
+            path=full_dir,
+            name=f"{finetuned_model}-full",
+            type=AssetTypes.CUSTOM_MODEL,
+            description=f"{desc_base}\nKind: Merged full model + tokenizer",
+            tags={**common_tags, "kind": "merged"},
+        ))
+        print(f"[register]   name={registered_full.name}  version={registered_full.version}")
+    except Exception as e:  # noqa: BLE001
+        print(f"[register]   ❌ merged-model registration failed: {e}")
+
+    # 3) Persist sample inference results so they ship with job outputs.
+    if sample_outputs:
+        import json
+        sample_path = os.path.join(output_dir, "sample_inference.json")
+        with open(sample_path, "w", encoding="utf-8") as f:
+            json.dump(sample_outputs, f, indent=2, ensure_ascii=False)
+        print(f"[register] Wrote sample inference results → {sample_path}")
+
+    print("[register] Done.")
 
 
 if __name__ == "__main__":
@@ -277,4 +418,16 @@ if __name__ == "__main__":
 
     if Accelerator().process_index == 0:
         print("\n──── sample generation ────")
-        print(quick_inference(model, tokenizer))
+        sample_outputs = quick_inference(model, tokenizer)
+        for i, item in enumerate(sample_outputs, 1):
+            print(f"\n[{i}] PROMPT  : {item['prompt']}")
+            print(f"[{i}] RESPONSE: {item['response']}")
+
+        print("\n──── registering model artifacts ────")
+        register_artifacts(
+            args=args,
+            finetuned_model=args.finetuned_model,
+            output_dir=args.output_dir,
+            sample_outputs=sample_outputs,
+            trainer=trainer,
+        )

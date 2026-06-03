@@ -24,6 +24,12 @@ mlflow>=2.22.1
 azureml-mlflow==1.62.0.post2
 tensorboard
 
+# ─── AML control plane (v2 SDK) — for model-registry registration from
+# inside the training job (parity with the CI notebook). Used by
+# fine_tune_llama_3_doctor.py::register_artifacts.
+azure-ai-ml==1.33.0
+azure-identity==1.25.3
+
 # ─── Misc utilities used by training scripts ──────────────────────────────
 regex
 py-cpuinfo==9.0.0
